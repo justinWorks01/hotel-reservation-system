@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Reservation System</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== MAIN APPLICATION LAYOUT ===== -->
+  <div id="app">
+
+    <!-- SIDEBAR: the navigation menu is built by js/app.js -->
+    <aside id="sidebar">
+      <div class="brand">🏨 HOTEL RESERVATION SYSTEM</div>
+      <nav>
+        <ul id="menu"></ul>
+      </nav>
+    </aside>
+
+    <!-- RIGHT SIDE: header + page content -->
+    <div id="main-area">
+      <header id="topbar">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="topbar-info">
+          <span id="db-status" class="badge">Database: checking...</span>
+          <span id="current-user">👤 Admin</span>
+        </div>
+      </header>
+
+      <main id="content">
+        <!-- The selected page is displayed here -->
+      </main>
+
+      <footer id="footer">
+        Hotel Reservation System &copy; 2026 | Software Engineering Laboratory
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== LOGGED-OUT SCREEN (hidden until Logout is clicked) ===== -->
+  <div id="logout-screen" class="hidden">
+    <div class="logout-box">
+      <h2>You have been logged out</h2>
+      <p>Thank you for using the Hotel Reservation System.</p>
+      <button id="login-again" class="btn">Log in again</button>
+    </div>
+  </div>
+
+  <!-- JavaScript files (order matters: database first, then app) -->
+  <script src="js/database.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
