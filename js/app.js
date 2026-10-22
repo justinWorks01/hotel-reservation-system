@@ -15,6 +15,7 @@ const menuItems = [
   { id: "checkout",     label: "🚪 Check-out",    stage: "a later stage" },
   { id: "reports",      label: "📈 Reports",      stage: "a later stage" },
   { id: "users",        label: "🔐 Users",        stage: "a later stage" },
+  { id: "database",     label: "🗄️ Database",     stage: "Stage 2" },
   { id: "logout",       label: "⏻ Logout",        stage: "" }
 ];
 
@@ -61,6 +62,8 @@ function showPage(pageId) {
   // Show the dashboard, or a "coming soon" page for modules not yet built
   if (pageId === "dashboard") {
     showDashboard();
+  } else if (pageId === "database") {
+    showDatabasePage();
   } else {
     showComingSoon(item);
   }

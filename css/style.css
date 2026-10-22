@@ -238,3 +238,53 @@ body {
     flex-wrap: wrap;
   }
 }
+
+/* ==========================================
+   STAGE 2 ADDITIONS (Database page)
+   ========================================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table th {
+  background: #eef2f7;
+  color: var(--primary);
+}
+
+.count {
+  font-size: 13px;
+  font-weight: normal;
+  color: var(--muted);
+}
+
+.key {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--white);
+}
+
+.key.pk { background: var(--accent); }
+.key.fk { background: var(--primary-light); }
+
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: #a93226; }
+
+#db-message { margin-top: 16px; }
+.msg-ok { color: var(--success); }
+.msg-error { color: var(--danger); }
+
+.plain-list {
+  list-style: none;
+  line-height: 1.9;
+}
