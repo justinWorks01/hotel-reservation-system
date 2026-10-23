@@ -7,7 +7,9 @@
 // Each item has an id, a label, and the stage where it will be built.
 const menuItems = [
   { id: "dashboard",    label: "📊 Dashboard",    stage: "Stage 1" },
-  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3 (Labs 3-5)" },
+  { id: "roomtypes",    label: "🏷️ Room Types",   stage: "Stage 3" },
+  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3" },
+  { id: "availability", label: "🔍 Availability", stage: "Stage 3" },
   { id: "guests",       label: "👥 Guests",       stage: "Stage 4" },
   { id: "reservations", label: "📅 Reservations", stage: "a later stage" },
   { id: "checkin",      label: "🔑 Check-in",     stage: "a later stage" },
@@ -62,6 +64,12 @@ function showPage(pageId) {
   // Show the dashboard, or a "coming soon" page for modules not yet built
   if (pageId === "dashboard") {
     showDashboard();
+  } else if (pageId === "roomtypes") {
+    showRoomTypesPage();
+  } else if (pageId === "rooms") {
+    showRoomsPage();
+  } else if (pageId === "availability") {
+    showAvailabilityPage();
   } else if (pageId === "database") {
     showDatabasePage();
   } else {
@@ -73,7 +81,7 @@ function showPage(pageId) {
 function showDashboard() {
   // Count the rooms that are available
   const availableRooms = Database.getAll("rooms").filter(function (room) {
-    return room.status === "Available";
+    return room.status === "Available" && room.active_status !== "Inactive";
   }).length;
 
   contentArea.innerHTML =

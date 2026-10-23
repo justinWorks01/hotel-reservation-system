@@ -89,6 +89,11 @@ const Database = {
         continue;
       }
 
+      // 2b. Whole numbers only (for things like floor and capacity)
+      if (f.integer && !Number.isInteger(value)) {
+        errors.push(name + " must be a whole number.");
+      }
+
       // 3. Minimum value (CHECK)
       if (f.min !== undefined && value < f.min) {
         errors.push(name + " must be at least " + f.min + ".");
@@ -127,6 +132,15 @@ const Database = {
 
   // ---------- INSERT ----------
   insert: function (table, record) {
+    // Fill in default values for fields that were left empty
+    const fields = SCHEMA[table].fields;
+    for (const name in fields) {
+      const f = fields[name];
+      if (f.default !== undefined && (record[name] === undefined || record[name] === "")) {
+        record[name] = f.default;
+      }
+    }
+
     const errors = this.validate(table, record, null);
     if (errors.length > 0) return { ok: false, errors: errors };
 

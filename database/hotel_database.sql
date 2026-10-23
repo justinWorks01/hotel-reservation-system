@@ -24,6 +24,7 @@ CREATE TABLE rooms (
   capacity      INT           NOT NULL CHECK (capacity >= 1),
   rate          DECIMAL(10,2) NOT NULL CHECK (rate >= 0),
   status        ENUM('Available','Reserved','Occupied','Cleaning','Maintenance') NOT NULL DEFAULT 'Available',
+  active_status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active',
   FOREIGN KEY (room_type_id) REFERENCES room_types(room_type_id)
 );
 

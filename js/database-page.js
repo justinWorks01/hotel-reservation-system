@@ -9,8 +9,10 @@ function describeConstraints(field) {
   const parts = [];
   if (field.required) parts.push("Required");
   if (field.unique)   parts.push("Unique");
+  if (field.integer)  parts.push("Whole number");
   if (field.min !== undefined) parts.push("Min: " + field.min);
   if (field.allowed)  parts.push("Allowed: " + field.allowed.join(" / "));
+  if (field.default !== undefined) parts.push("Default: " + field.default);
   return parts.length > 0 ? parts.join(", ") : "-";
 }
 

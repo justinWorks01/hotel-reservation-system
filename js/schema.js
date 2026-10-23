@@ -11,6 +11,8 @@
      unique      : true  -> no two records can have the same value
      allowed     : [..]  -> the value must be one of these choices
      min         : the smallest number allowed
+     integer     : true  -> must be a whole number
+     default     : value used when the field is left empty
      references  : { table, field } -> FOREIGN KEY to another table
 
    Tables are listed "parents first" so that a table is always
@@ -25,8 +27,8 @@ const SCHEMA = {
       type_name:   { type: "text",   required: true, unique: true },
       description: { type: "text" },
       base_rate:   { type: "number", required: true, min: 0 },
-      capacity:    { type: "number", required: true, min: 1 },
-      status:      { type: "text",   required: true, allowed: ["Active", "Inactive"] }
+      capacity:    { type: "number", required: true, min: 1, integer: true },
+      status:      { type: "text",   required: true, allowed: ["Active", "Inactive"], default: "Active" }
     }
   },
 
@@ -35,11 +37,13 @@ const SCHEMA = {
     fields: {
       room_number:  { type: "text",   required: true, unique: true },
       room_type_id: { type: "number", required: true, references: { table: "room_types", field: "room_type_id" } },
-      floor:        { type: "number", required: true, min: 1 },
-      capacity:     { type: "number", required: true, min: 1 },
+      floor:        { type: "number", required: true, min: 1, integer: true },
+      capacity:     { type: "number", required: true, min: 1, integer: true },
       rate:         { type: "number", required: true, min: 0 },
       // Includes all the statuses needed by Stage 3 (Laboratory Activity 4)
-      status:       { type: "text",   required: true, allowed: ["Available", "Reserved", "Occupied", "Cleaning", "Maintenance"] }
+      status:       { type: "text",   required: true, allowed: ["Available", "Reserved", "Occupied", "Cleaning", "Maintenance"], default: "Available" },
+      // Added in Stage 3 (Laboratory Activity 4: activate / deactivate a room)
+      active_status: { type: "text", allowed: ["Active", "Inactive"], default: "Active" }
     }
   },
 
@@ -66,7 +70,7 @@ const SCHEMA = {
       reservation_date: { type: "date",   required: true },
       check_in_date:    { type: "date",   required: true },
       check_out_date:   { type: "date",   required: true },
-      number_of_guests: { type: "number", required: true, min: 1 },
+      number_of_guests: { type: "number", required: true, min: 1, integer: true },
       total_amount:     { type: "number", required: true, min: 0 },
       status:           { type: "text",   required: true, allowed: ["Pending", "Confirmed", "Cancelled"] }
     },
