@@ -1,10 +1,3 @@
-/* ==========================================
-   MAIN APPLICATION (js/app.js)
-   Handles: menu, page switching, dashboard, logout
-   ========================================== */
-
-// ----- 1. THE MENU -----
-// Each item has an id, a label, and the stage where it will be built.
 const menuItems = [
   { id: "dashboard",    label: "📊 Dashboard",    stage: "Stage 1" },
   { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3 (Labs 3-5)" },
@@ -41,7 +34,6 @@ function buildMenu() {
   });
 }
 
-// ----- 2. SHOWING A PAGE -----
 function showPage(pageId) {
   // Logout is not a page, it has its own behavior
   if (pageId === "logout") {
@@ -69,7 +61,7 @@ function showPage(pageId) {
   }
 }
 
-// ----- 3. THE DASHBOARD -----
+
 function showDashboard() {
   // Count the rooms that are available
   const availableRooms = Database.getAll("rooms").filter(function (room) {
@@ -99,7 +91,7 @@ function makeCard(label, number) {
          '</div>';
 }
 
-// ----- 4. PAGES NOT YET BUILT -----
+
 function showComingSoon(item) {
   contentArea.innerHTML =
     '<div class="panel">' +
@@ -108,7 +100,7 @@ function showComingSoon(item) {
     '</div>';
 }
 
-// ----- 5. LOGOUT -----
+
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
     logoutScreen.classList.remove("hidden");
@@ -120,7 +112,7 @@ document.getElementById("login-again").addEventListener("click", function () {
   showPage("dashboard");
 });
 
-// ----- 6. START THE APPLICATION -----
+
 function startApp() {
   // Connect to the database and show the result in the top bar
   if (Database.connect()) {
