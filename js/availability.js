@@ -1,29 +1,23 @@
-/* ==========================================
-   ROOM AVAILABILITY CHECKING (js/availability.js)
-   Laboratory Activity 5
-
-   findAvailableRooms() is the foundation of the
-   Reservation module (Stage 5), so keep it reusable.
-   ========================================== */
-
-// What the user searched for (kept when the page is redrawn)
 let availabilityQuery = { checkIn: "", checkOut: "", guests: 2, roomTypeId: "" };
 
-// ----- THE AVAILABILITY LOGIC -----
-// Returns { available: [...], unavailable: [...] }
-// A room is NOT available when:
-//   - the room or its room type is inactive
-//   - the room is under maintenance
-//   - the number of guests is more than the room capacity
-//   - it has a CONFIRMED reservation that overlaps the dates
-// roomTypeId can be "" to search all room types.
-function findAvailableRooms(checkIn, checkOut, guests, roomTypeId) {
+const RESERVATION_BLOCKING_STATUSES = ["Confirmed", "Checked-in"];
+
+function findRoomConflict(roomId, checkIn, checkOut, ignoreReservationId) {
+  return Database.getAll("reservations").find(function (r) {
+    return r.room_id === roomId &&
+           r.reservation_id !== ignoreReservationId &&
+           RESERVATION_BLOCKING_STATUSES.indexOf(r.status) !== -1 &&
+           r.check_in_date < checkOut &&
+           r.check_out_date > checkIn;
+  });
+}
+
+function findAvailableRooms(checkIn, checkOut, guests, roomTypeId, ignoreReservationId) {
   const available = [];
   const unavailable = [];
-  const reservations = Database.getAll("reservations");
 
   Database.getAll("rooms").forEach(function (room) {
-    // Skip rooms of other types when a type was chosen
+
     if (roomTypeId && room.room_type_id !== roomTypeId) return;
 
     const type = Database.getById("room_types", room.room_type_id);
@@ -38,14 +32,8 @@ function findAvailableRooms(checkIn, checkOut, guests, roomTypeId) {
     } else if (room.capacity < guests) {
       reason = "Capacity is only " + room.capacity;
     } else {
-      // Two periods overlap when each one starts before the other ends.
-      // Check-out day and check-in day may be the same day.
-      const clash = reservations.find(function (r) {
-        return r.room_id === room.room_id &&
-               r.status === "Confirmed" &&
-               r.check_in_date < checkOut &&
-               r.check_out_date > checkIn;
-      });
+
+      const clash = findRoomConflict(room.room_id, checkIn, checkOut, ignoreReservationId);
       if (clash) reason = "Already reserved (" + clash.reservation_no + ")";
     }
 
@@ -62,7 +50,6 @@ function findAvailableRooms(checkIn, checkOut, guests, roomTypeId) {
   return { available: available, unavailable: unavailable };
 }
 
-// ----- DRAW THE PAGE -----
 function showAvailabilityPage() {
   const q = availabilityQuery;
 
@@ -92,17 +79,15 @@ function showAvailabilityPage() {
     '<div id="av-results"></div>';
 }
 
-// ----- SEARCH BUTTON -----
 function searchAvailability() {
   const checkIn = document.getElementById("av-checkin").value;
   const checkOut = document.getElementById("av-checkout").value;
   const guests = toNumber(document.getElementById("av-guests").value);
-  const typeId = toNumber(document.getElementById("av-type").value);   // "" = all types
+  const typeId = toNumber(document.getElementById("av-type").value);
 
   availabilityQuery = { checkIn: checkIn, checkOut: checkOut, guests: guests, roomTypeId: typeId };
   const results = document.getElementById("av-results");
 
-  // Check the search criteria first
   const errors = [];
   if (!checkIn)  errors.push("Check-in date is required.");
   if (!checkOut) errors.push("Check-out date is required.");
@@ -121,7 +106,6 @@ function searchAvailability() {
   results.innerHTML = buildAvailabilityResults(found, checkIn, checkOut, guests, typeId);
 }
 
-// ----- THE RESULTS -----
 function buildAvailabilityResults(found, checkIn, checkOut, guests, typeId) {
   const nights = countNights(checkIn, checkOut);
   const typeText = typeId ? getRoomTypeName(typeId) : "All room types";
@@ -135,7 +119,7 @@ function buildAvailabilityResults(found, checkIn, checkOut, guests, typeId) {
     html += '<p class="msg-error">No rooms are available for the selected dates.</p>';
   } else {
     html += '<table class="data-table">' +
-      '<thead><tr><th>Room</th><th>Type</th><th>Capacity</th><th>Rate</th><th>Total for ' + nights + ' night' + (nights > 1 ? 's' : '') + '</th></tr></thead><tbody>';
+      '<thead><tr><th>Room</th><th>Type</th><th>Capacity</th><th>Rate</th><th>Total for ' + nights + ' night' + (nights > 1 ? 's' : '') + '</th><th></th></tr></thead><tbody>';
     found.available.forEach(function (item) {
       html += '<tr>' +
         '<td><strong>Room ' + escapeHtml(item.room.room_number) + '</strong></td>' +
@@ -143,13 +127,13 @@ function buildAvailabilityResults(found, checkIn, checkOut, guests, typeId) {
         '<td>' + item.room.capacity + '</td>' +
         '<td>' + formatPeso(item.room.rate) + '/night</td>' +
         '<td>' + formatPeso(item.room.rate * nights) + '</td>' +
+        '<td><button class="btn-small" onclick="startReservation(' + item.room.room_id + ', \'' + checkIn + '\', \'' + checkOut + '\', ' + guests + ')">Reserve</button></td>' +
       '</tr>';
     });
     html += '</tbody></table>';
   }
   html += '</div>';
 
-  // Rooms that did not qualify, with the reason (useful for checking and testing)
   if (found.unavailable.length > 0) {
     html += '<div class="panel"><h2>Not available</h2>' +
       '<table class="data-table"><thead><tr><th>Room</th><th>Type</th><th>Reason</th></tr></thead><tbody>';

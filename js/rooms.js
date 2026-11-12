@@ -1,27 +1,17 @@
-/* ==========================================
-   ROOM MANAGEMENT (js/rooms.js)
-   Laboratory Activity 4
-   Add, edit, view, search, change status, mark as
-   maintenance, and activate/deactivate rooms.
-   ========================================== */
+let roomPanel = null;
+let roomSearch = "";
+let roomStatusFilter = "All";
 
-let roomPanel = null;              // null, or { mode: "add" | "edit" | "view", id, draft }
-let roomSearch = "";               // text in the search box
-let roomStatusFilter = "All";      // chosen status in the filter
-
-// Finds the name of a room type from its ID
 function getRoomTypeName(roomTypeId) {
   const type = Database.getById("room_types", roomTypeId);
   return type ? type.type_name : "(unknown)";
 }
 
-// ----- DRAW THE PAGE -----
 function showRoomsPage(message) {
   let html = "";
   if (message) html += '<div class="message-area">' + message + '</div>';
   if (roomPanel) html += buildRoomPanel();
 
-  // Options of the status filter
   let filterOptions = '<option value="All">All statuses</option>';
   SCHEMA.rooms.fields.status.allowed.forEach(function (s) {
     filterOptions += '<option value="' + s + '"' + (s === roomStatusFilter ? " selected" : "") + '>' + s + '</option>';
@@ -43,7 +33,6 @@ function showRoomsPage(message) {
   contentArea.innerHTML = html;
 }
 
-// ----- THE LIST (also used by search and filter) -----
 function buildRoomRows() {
   const keyword = roomSearch.toLowerCase();
 
@@ -54,7 +43,6 @@ function buildRoomRows() {
     return matchesSearch && matchesStatus;
   });
 
-  // Sort by room number (101, 102, 201, ...)
   rooms.sort(function (a, b) {
     return a.room_number.localeCompare(b.room_number, undefined, { numeric: true });
   });
@@ -68,7 +56,6 @@ function buildRoomRows() {
     const active = isRoomActive(room);
     const id = room.room_id;
 
-    // A drop-down in the row to change the status quickly
     let statusSelect = '<select class="input input-small" onchange="changeRoomStatus(' + id + ', this.value)">';
     SCHEMA.rooms.fields.status.allowed.forEach(function (s) {
       statusSelect += '<option' + (s === room.status ? " selected" : "") + '>' + s + '</option>';
@@ -102,17 +89,14 @@ function filterRooms() {
   document.getElementById("room-rows").innerHTML = buildRoomRows();
 }
 
-// ----- BUTTONS -----
 function addRoom()        { roomPanel = { mode: "add",  id: null, draft: null }; showRoomsPage(); }
 function editRoom(id)     { roomPanel = { mode: "edit", id: id,   draft: null }; showRoomsPage(); }
 function viewRoom(id)     { roomPanel = { mode: "view", id: id,   draft: null }; showRoomsPage(); }
 function closeRoomPanel() { roomPanel = null; showRoomsPage(); }
 
-// Change the status of a room (Available, Reserved, Occupied, Cleaning, Maintenance)
 function changeRoomStatus(id, newStatus) {
   const room = Database.getById("rooms", id);
 
-  // Business rule: a room with a guest inside cannot go to maintenance
   if (newStatus === "Maintenance" && room.status === "Occupied") {
     showRoomsPage(messageHtml("error", "Room " + room.room_number + " is occupied. Check out the guest before marking it as maintenance."));
     return;
@@ -130,12 +114,10 @@ function markRoomMaintenance(id) {
   changeRoomStatus(id, "Maintenance");
 }
 
-// Activate or deactivate a room
 function toggleRoomActive(id) {
   const room = Database.getById("rooms", id);
   const turningOff = isRoomActive(room);
 
-  // Business rule: a room in use cannot be deactivated
   if (turningOff && (room.status === "Occupied" || room.status === "Reserved")) {
     showRoomsPage(messageHtml("error", "Room " + room.room_number + " is " + room.status.toLowerCase() + " and cannot be deactivated."));
     return;
@@ -151,7 +133,6 @@ function toggleRoomActive(id) {
   }
 }
 
-// ----- THE FORM AND THE VIEW PANEL -----
 function buildRoomPanel() {
   if (roomPanel.mode === "view") {
     return buildRoomView(roomPanel.id);
@@ -161,7 +142,6 @@ function buildRoomPanel() {
   const data = roomPanel.draft ||
                (editing ? Database.getById("rooms", roomPanel.id) : { status: "Available" });
 
-  // Room type drop-down: only active types (plus the room's current type)
   let typeOptions = '<option value="">-- Select room type --</option>';
   Database.getAll("room_types").forEach(function (t) {
     if (t.status === "Active" || t.room_type_id === data.room_type_id) {
@@ -170,7 +150,6 @@ function buildRoomPanel() {
     }
   });
 
-  // Status drop-down
   let statusOptions = "";
   SCHEMA.rooms.fields.status.allowed.forEach(function (s) {
     statusOptions += '<option' + (s === data.status ? " selected" : "") + '>' + s + '</option>';
@@ -198,7 +177,6 @@ function buildRoomPanel() {
   '</div>';
 }
 
-// When a room type is chosen, copy its capacity and rate into the form
 function fillFromRoomType() {
   const typeId = toNumber(document.getElementById("room-type").value);
   const type = (typeId === "") ? null : Database.getById("room_types", typeId);
@@ -240,7 +218,6 @@ function buildRoomView(id) {
   '</div>';
 }
 
-// ----- SAVE -----
 function saveRoom() {
   const record = {
     room_number:  document.getElementById("room-number").value.trim(),

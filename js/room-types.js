@@ -1,15 +1,6 @@
-/* ==========================================
-   ROOM TYPE MANAGEMENT (js/room-types.js)
-   Laboratory Activity 3
-   Add, edit, view, activate/deactivate and search room types.
-   ========================================== */
-
-// What is shown above the list: null (nothing), or
-// { mode: "add" | "edit" | "view", id: number, draft: object }
 let roomTypePanel = null;
-let roomTypeSearch = "";   // text typed in the search box
+let roomTypeSearch = "";
 
-// ----- DRAW THE PAGE -----
 function showRoomTypesPage(message) {
   let html = "";
   if (message) html += '<div class="message-area">' + message + '</div>';
@@ -30,7 +21,6 @@ function showRoomTypesPage(message) {
   contentArea.innerHTML = html;
 }
 
-// ----- THE LIST (also used by the search) -----
 function buildRoomTypeRows() {
   const keyword = roomTypeSearch.toLowerCase();
 
@@ -67,13 +57,11 @@ function buildRoomTypeRows() {
   return html;
 }
 
-// Runs every time the user types in the search box
 function filterRoomTypes() {
   roomTypeSearch = document.getElementById("rt-search").value;
   document.getElementById("rt-rows").innerHTML = buildRoomTypeRows();
 }
 
-// ----- BUTTONS -----
 function addRoomType() {
   roomTypePanel = { mode: "add", id: null, draft: null };
   showRoomTypesPage();
@@ -94,7 +82,6 @@ function closeRoomTypePanel() {
   showRoomTypesPage();
 }
 
-// Activate or deactivate
 function toggleRoomType(id) {
   const type = Database.getById("room_types", id);
   const newStatus = (type.status === "Active") ? "Inactive" : "Active";
@@ -107,14 +94,13 @@ function toggleRoomType(id) {
   }
 }
 
-// ----- THE FORM AND THE VIEW PANEL -----
 function buildRoomTypePanel() {
   if (roomTypePanel.mode === "view") {
     return buildRoomTypeView(roomTypePanel.id);
   }
 
   const editing = (roomTypePanel.mode === "edit");
-  // Show what the user typed before (if the save failed), or the saved record
+
   const data = roomTypePanel.draft ||
                (editing ? Database.getById("room_types", roomTypePanel.id) : { status: "Active" });
 
@@ -160,9 +146,8 @@ function buildRoomTypeView(id) {
   '</div>';
 }
 
-// ----- SAVE -----
 function saveRoomType() {
-  // Read the form (everything typed is text, so numbers are converted)
+
   const record = {
     type_name:   document.getElementById("rt-name").value.trim(),
     description: document.getElementById("rt-description").value.trim(),
@@ -171,7 +156,6 @@ function saveRoomType() {
     status:      document.getElementById("rt-status").value
   };
 
-  // The database checks all the rules (required, unique, etc.)
   let result;
   if (roomTypePanel.mode === "edit") {
     result = Database.update("room_types", roomTypePanel.id, record);
@@ -180,7 +164,7 @@ function saveRoomType() {
   }
 
   if (!result.ok) {
-    roomTypePanel.draft = record;   // keep what the user typed
+    roomTypePanel.draft = record;
     showRoomTypesPage(messageHtml("error", result.errors));
     return;
   }

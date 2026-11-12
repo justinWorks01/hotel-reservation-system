@@ -1,9 +1,3 @@
--- ==========================================================
--- HOTEL RESERVATION SYSTEM - DATABASE SCRIPT (Stage 2)
--- Same design as js/schema.js, written in SQL (MySQL syntax).
--- Tables are created parents first so foreign keys work.
--- ==========================================================
-
 CREATE DATABASE IF NOT EXISTS hotel_reservation_db;
 USE hotel_reservation_db;
 
@@ -30,14 +24,15 @@ CREATE TABLE rooms (
 
 CREATE TABLE guests (
   guest_id                 INT AUTO_INCREMENT PRIMARY KEY,
-  guest_no                 VARCHAR(20)  NOT NULL UNIQUE,
+  guest_no                 VARCHAR(20)  NOT NULL UNIQUE CHECK (guest_no REGEXP '^G-[0-9]{4,}$'),
   first_name               VARCHAR(50)  NOT NULL,
   last_name                VARCHAR(50)  NOT NULL,
-  contact_no               VARCHAR(20)  NOT NULL,
-  email                    VARCHAR(100),
+  contact_no               VARCHAR(20)  NOT NULL CHECK (contact_no REGEXP '^(09|[+]639)[0-9]{9}$'),
+  email                    VARCHAR(100) CHECK (email IS NULL OR email = '' OR email REGEXP '^[^ @]+@[^ @]+[.][^ @]+$'),
   address                  VARCHAR(255),
   identification_type      VARCHAR(50),
-  identification_reference VARCHAR(100)
+  identification_reference VARCHAR(100),
+  active_status            ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE reservations (
@@ -50,7 +45,7 @@ CREATE TABLE reservations (
   check_out_date   DATE          NOT NULL,
   number_of_guests INT           NOT NULL CHECK (number_of_guests >= 1),
   total_amount     DECIMAL(10,2) NOT NULL CHECK (total_amount >= 0),
-  status           ENUM('Pending','Confirmed','Cancelled') NOT NULL DEFAULT 'Pending',
+  status           ENUM('Pending','Confirmed','Checked-in','Checked-out','Cancelled','No-show') NOT NULL DEFAULT 'Pending',
   CHECK (check_out_date > check_in_date),
   FOREIGN KEY (guest_id) REFERENCES guests(guest_id),
   FOREIGN KEY (room_id)  REFERENCES rooms(room_id)
@@ -97,7 +92,7 @@ CREATE TABLE check_outs (
 CREATE TABLE users (
   user_id  INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50)  NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,          -- store a HASHED password, never plain text
+  password VARCHAR(255) NOT NULL,
   role     ENUM('Administrator','Manager','Receptionist') NOT NULL,
   status   ENUM('Active','Inactive') NOT NULL DEFAULT 'Active'
 );

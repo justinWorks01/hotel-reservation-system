@@ -1,24 +1,3 @@
-/* ==========================================
-   DATABASE DESIGN (js/schema.js)
-   ------------------------------------------
-   This file is the "blueprint" of the database (Stage 2).
-   It describes every table, its primary key (pk), its fields,
-   and the rules (constraints) each field must follow.
-
-   Field options:
-     type        : "text", "number", "date" or "datetime"
-     required    : true  -> the field cannot be empty
-     unique      : true  -> no two records can have the same value
-     allowed     : [..]  -> the value must be one of these choices
-     min         : the smallest number allowed
-     integer     : true  -> must be a whole number
-     default     : value used when the field is left empty
-     references  : { table, field } -> FOREIGN KEY to another table
-
-   Tables are listed "parents first" so that a table is always
-   created after the tables it depends on.
-   ========================================== */
-
 const SCHEMA = {
 
   room_types: {
@@ -40,9 +19,9 @@ const SCHEMA = {
       floor:        { type: "number", required: true, min: 1, integer: true },
       capacity:     { type: "number", required: true, min: 1, integer: true },
       rate:         { type: "number", required: true, min: 0 },
-      // Includes all the statuses needed by Stage 3 (Laboratory Activity 4)
+
       status:       { type: "text",   required: true, allowed: ["Available", "Reserved", "Occupied", "Cleaning", "Maintenance"], default: "Available" },
-      // Added in Stage 3 (Laboratory Activity 4: activate / deactivate a room)
+
       active_status: { type: "text", allowed: ["Active", "Inactive"], default: "Active" }
     }
   },
@@ -50,14 +29,16 @@ const SCHEMA = {
   guests: {
     pk: "guest_id",
     fields: {
-      guest_no:                 { type: "text", required: true, unique: true },
+      guest_no:                 { type: "text", required: true, unique: true, pattern: /^G-\d{4,}$/, patternMessage: "Guest No. must look like G-0001." },
       first_name:               { type: "text", required: true },
       last_name:                { type: "text", required: true },
-      contact_no:               { type: "text", required: true },
-      email:                    { type: "text" },
+      contact_no:               { type: "text", required: true, pattern: /^(09|\+639)\d{9}$/, patternMessage: "Contact number must be a valid mobile number, like 09123456789." },
+      email:                    { type: "text", pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, patternMessage: "Email address is not valid (example: juan@email.com)." },
       address:                  { type: "text" },
       identification_type:      { type: "text" },
-      identification_reference: { type: "text" }
+      identification_reference: { type: "text" },
+
+      active_status:            { type: "text", allowed: ["Active", "Inactive"], default: "Active" }
     }
   },
 
@@ -72,9 +53,9 @@ const SCHEMA = {
       check_out_date:   { type: "date",   required: true },
       number_of_guests: { type: "number", required: true, min: 1, integer: true },
       total_amount:     { type: "number", required: true, min: 0 },
-      status:           { type: "text",   required: true, allowed: ["Pending", "Confirmed", "Cancelled"] }
+      status:           { type: "text",   required: true, allowed: ["Pending", "Confirmed", "Checked-in", "Checked-out", "Cancelled", "No-show"], default: "Pending" }
     },
-    // Extra rules that involve more than one field
+
     rules: [
       function (r) {
         if (r.check_in_date && r.check_out_date && r.check_out_date <= r.check_in_date) {
@@ -127,7 +108,7 @@ const SCHEMA = {
     pk: "user_id",
     fields: {
       username: { type: "text", required: true, unique: true },
-      password: { type: "text", required: true },   // must be a HASHED password (done in the Users module)
+      password: { type: "text", required: true },
       role:     { type: "text", required: true, allowed: ["Administrator", "Manager", "Receptionist"] },
       status:   { type: "text", required: true, allowed: ["Active", "Inactive"] }
     }

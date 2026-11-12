@@ -1,7 +1,8 @@
-
 const menuItems = [
   { id: "dashboard",    label: "📊 Dashboard",    stage: "Stage 1" },
-  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3 (Labs 3-5)" },
+  { id: "roomtypes",    label: "🏷️ Room Types",   stage: "Stage 3" },
+  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3" },
+  { id: "availability", label: "🔍 Availability", stage: "Stage 3" },
   { id: "guests",       label: "👥 Guests",       stage: "Stage 4" },
   { id: "reservations", label: "📅 Reservations", stage: "a later stage" },
   { id: "checkin",      label: "🔑 Check-in",     stage: "a later stage" },
@@ -9,6 +10,7 @@ const menuItems = [
   { id: "checkout",     label: "🚪 Check-out",    stage: "a later stage" },
   { id: "reports",      label: "📈 Reports",      stage: "a later stage" },
   { id: "users",        label: "🔐 Users",        stage: "a later stage" },
+  { id: "database",     label: "🗄️ Database",     stage: "Stage 2" },
   { id: "logout",       label: "⏻ Logout",        stage: "" }
 ];
 
@@ -32,46 +34,55 @@ function buildMenu() {
   });
 }
 
-
 function showPage(pageId) {
-  // Logout is not a page, it has its own behavior
+
   if (pageId === "logout") {
     logout();
     return;
   }
 
-  
   menuItems.forEach(function (item) {
     document.getElementById("menu-" + item.id).classList.remove("active");
   });
   document.getElementById("menu-" + pageId).classList.add("active");
 
-  
   const item = menuItems.find(function (m) { return m.id === pageId; });
-  pageTitle.textContent = item.label.split(" ").slice(1).join(" ");   // remove the emoji
+  pageTitle.textContent = item.label.split(" ").slice(1).join(" ");
 
-  
   if (pageId === "dashboard") {
     showDashboard();
+  } else if (pageId === "roomtypes") {
+    showRoomTypesPage();
+  } else if (pageId === "rooms") {
+    showRoomsPage();
+  } else if (pageId === "availability") {
+    showAvailabilityPage();
+  } else if (pageId === "guests") {
+    showGuestsPage();
+  } else if (pageId === "reservations") {
+    showReservationsPage();
+  } else if (pageId === "checkin") {
+    showCheckinPage();
+  } else if (pageId === "database") {
+    showDatabasePage();
   } else {
     showComingSoon(item);
   }
 }
 
-
 function showDashboard() {
-  // Count the rooms that are available
+
   const availableRooms = Database.getAll("rooms").filter(function (room) {
-    return room.status === "Available";
+    return room.status === "Available" && room.active_status !== "Inactive";
   }).length;
 
   contentArea.innerHTML =
     '<div class="card-grid">' +
       makeCard("Total Rooms", Database.count("rooms")) +
       makeCard("Available Rooms", availableRooms) +
-      makeCard("Guests", Database.count("guests")) +
+      makeCard("Guests", Database.getAll("guests").filter(isGuestActive).length) +
       makeCard("Reservations", Database.count("reservations")) +
-      makeCard("Checked-in", Database.count("check_ins")) +
+      makeCard("Checked-in", Database.getAll("reservations").filter(function (r) { return r.status === "Checked-in"; }).length) +
     '</div>' +
     '<div class="panel">' +
       '<h2>Welcome to the Hotel Reservation System</h2>' +
@@ -80,14 +91,12 @@ function showDashboard() {
     '</div>';
 }
 
-
 function makeCard(label, number) {
   return '<div class="card">' +
            '<div class="label">' + label + '</div>' +
            '<div class="number">' + number + '</div>' +
          '</div>';
 }
-
 
 function showComingSoon(item) {
   contentArea.innerHTML =
@@ -96,7 +105,6 @@ function showComingSoon(item) {
       '<p>This module will be developed in <strong>' + item.stage + '</strong>.</p>' +
     '</div>';
 }
-
 
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
@@ -109,9 +117,8 @@ document.getElementById("login-again").addEventListener("click", function () {
   showPage("dashboard");
 });
 
-
 function startApp() {
-  // Connect to the database and show the result in the top bar
+
   if (Database.connect()) {
     dbStatus.textContent = "Database: Connected";
     dbStatus.classList.add("connected");

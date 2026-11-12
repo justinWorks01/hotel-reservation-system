@@ -1,9 +1,3 @@
-/* ==========================================
-   HELPER FUNCTIONS (js/helpers.js)
-   Small tools used by many pages.
-   ========================================== */
-
-// Makes text safe to show inside HTML (stops typed "<" or quotes from breaking the page)
 function escapeHtml(text) {
   if (text === undefined || text === null) return "";
   return String(text)
@@ -13,44 +7,62 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;");
 }
 
-// 3500 -> "₱3,500"
 function formatPeso(amount) {
   return "₱" + Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 });
 }
 
-// "2026-09-10" -> "September 10, 2026"
 function formatDate(dateText) {
   const date = new Date(dateText + "T00:00:00");
   return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 }
 
-// Form inputs always give text. This turns it into a number.
-// An empty box stays "" so the "required" rule can catch it.
 function toNumber(text) {
   if (text === undefined || text === null || String(text).trim() === "") return "";
   return Number(text);
 }
 
-// Number of nights between two dates ("YYYY-MM-DD")
 function countNights(checkIn, checkOut) {
   const start = new Date(checkIn + "T00:00:00");
   const end = new Date(checkOut + "T00:00:00");
   return Math.round((end - start) / (1000 * 60 * 60 * 24));
 }
 
-// Makes a green (type "ok") or red (type "error") message.
-// "content" can be a text or a list of texts.
 function messageHtml(type, content) {
   const list = Array.isArray(content) ? content : [content];
   return '<p class="msg-' + type + '">' + list.map(escapeHtml).join("<br>") + '</p>';
 }
 
-// Colored label for a status, e.g. Available, Active, Maintenance
 function statusBadge(text) {
   return '<span class="status status-' + String(text).toLowerCase() + '">' + escapeHtml(text) + '</span>';
 }
 
-// A room is active unless it was deactivated
 function isRoomActive(room) {
   return room.active_status !== "Inactive";
+}
+
+function formatDateRange(checkIn, checkOut) {
+  const start = new Date(checkIn + "T00:00:00");
+  const end = new Date(checkOut + "T00:00:00");
+  if (start.getFullYear() === end.getFullYear() && start.getMonth() === end.getMonth()) {
+    return start.toLocaleDateString("en-US", { month: "long" }) + " " + start.getDate() +
+           "–" + end.getDate() + ", " + start.getFullYear();
+  }
+  return formatDate(checkIn) + " – " + formatDate(checkOut);
+}
+
+function formatDateTime(text) {
+  return new Date(text).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+}
+
+function todayText() {
+  const d = new Date();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return d.getFullYear() + "-" + month + "-" + day;
+}
+
+function nowLocalText() {
+  const d = new Date();
+  const pad = function (n) { return String(n).padStart(2, "0"); };
+  return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
 }

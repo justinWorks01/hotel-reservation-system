@@ -1,8 +1,3 @@
-/* ==========================================
-   HOTEL RESERVATION SYSTEM - MAIN STYLESHEET
-   ========================================== */
-
-/* Colors are saved as variables so you can change the theme in one place */
 :root {
   --primary: #1f3a5f;
   --primary-light: #2f5d8f;
@@ -31,13 +26,11 @@ body {
   display: none !important;
 }
 
-/* ----- Overall layout: sidebar on the left, content on the right ----- */
 #app {
   display: flex;
   min-height: 100vh;
 }
 
-/* ----- Sidebar ----- */
 #sidebar {
   width: 240px;
   background: var(--primary);
@@ -71,7 +64,6 @@ body {
   background: var(--primary-light);
 }
 
-/* The page currently open gets the "active" class */
 #menu li a.active {
   background: var(--primary-light);
   border-left-color: var(--accent);
@@ -79,7 +71,6 @@ body {
   font-weight: bold;
 }
 
-/* ----- Right side ----- */
 #main-area {
   flex: 1;
   display: flex;
@@ -136,7 +127,6 @@ body {
   color: var(--muted);
 }
 
-/* ----- Dashboard cards ----- */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -183,7 +173,6 @@ body {
   margin-bottom: 8px;
 }
 
-/* ----- Buttons ----- */
 .btn {
   background: var(--primary);
   color: var(--white);
@@ -198,7 +187,6 @@ body {
   background: var(--primary-light);
 }
 
-/* ----- Logout screen ----- */
 #logout-screen {
   position: fixed;
   inset: 0;
@@ -225,7 +213,6 @@ body {
   color: var(--muted);
 }
 
-/* ----- Small screens (phones) ----- */
 @media (max-width: 700px) {
   #app {
     flex-direction: column;
@@ -239,9 +226,6 @@ body {
   }
 }
 
-/* ==========================================
-   STAGE 2 ADDITIONS (Database page)
-   ========================================== */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -289,9 +273,6 @@ body {
   line-height: 1.9;
 }
 
-/* ==========================================
-   STAGE 3 ADDITIONS (Room modules)
-   ========================================== */
 .toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -369,7 +350,6 @@ body {
 
 .actions { white-space: nowrap; }
 
-/* Colored status labels */
 .status {
   display: inline-block;
   padding: 3px 9px;
@@ -401,4 +381,65 @@ body {
 .detail-list ul {
   margin-left: 190px;
   line-height: 1.7;
+}
+
+.status-pending   { background: #fff1c9; color: #8a6100; }
+.status-confirmed { background: #d6f0e0; color: #1e7a45; }
+.status-cancelled { background: #e5e7eb; color: #4b5563; }
+
+.divider {
+  border: none;
+  border-top: 2px dashed #c9d1dc;
+  margin: 16px 0;
+}
+
+.section-title {
+  font-size: 15px;
+  color: var(--primary);
+  margin: 14px 0 6px;
+}
+
+.history-list {
+  margin: 0 0 12px 22px;
+  line-height: 1.9;
+}
+
+.status-checked-in  { background: #dbe8fb; color: #1d4f9c; }
+.status-checked-out { background: #e5e7eb; color: #374151; }
+.status-no-show     { background: #f8d7d3; color: #a93226; }
+
+.inline-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.inline-label .input {
+  width: auto;
+}
+
+.summary-box {
+  background: #f8fafc;
+  border: 1px solid #dde2ea;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.summary-box .detail-list {
+  margin-bottom: 10px;
+}
+
+.computation {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+
+.not-allowed {
+  color: var(--danger);
+  font-weight: bold;
+  letter-spacing: 1px;
 }
