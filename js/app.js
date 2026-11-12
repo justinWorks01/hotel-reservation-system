@@ -1,8 +1,7 @@
+
 const menuItems = [
   { id: "dashboard",    label: "📊 Dashboard",    stage: "Stage 1" },
-  { id: "roomtypes",    label: "🏷️ Room Types",   stage: "Stage 3" },
-  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3" },
-  { id: "availability", label: "🔍 Availability", stage: "Stage 3" },
+  { id: "rooms",        label: "🛏️ Rooms",        stage: "Stage 3 (Labs 3-5)" },
   { id: "guests",       label: "👥 Guests",       stage: "Stage 4" },
   { id: "reservations", label: "📅 Reservations", stage: "a later stage" },
   { id: "checkin",      label: "🔑 Check-in",     stage: "a later stage" },
@@ -10,18 +9,15 @@ const menuItems = [
   { id: "checkout",     label: "🚪 Check-out",    stage: "a later stage" },
   { id: "reports",      label: "📈 Reports",      stage: "a later stage" },
   { id: "users",        label: "🔐 Users",        stage: "a later stage" },
-  { id: "database",     label: "🗄️ Database",     stage: "Stage 2" },
   { id: "logout",       label: "⏻ Logout",        stage: "" }
 ];
 
-// Get the parts of the page we need to change
 const menuList     = document.getElementById("menu");
 const contentArea  = document.getElementById("content");
 const pageTitle    = document.getElementById("page-title");
 const dbStatus     = document.getElementById("db-status");
 const logoutScreen = document.getElementById("logout-screen");
 
-// Build the menu links on the screen
 function buildMenu() {
   menuItems.forEach(function (item) {
     const li = document.createElement("li");
@@ -36,6 +32,7 @@ function buildMenu() {
   });
 }
 
+
 function showPage(pageId) {
   // Logout is not a page, it has its own behavior
   if (pageId === "logout") {
@@ -43,27 +40,19 @@ function showPage(pageId) {
     return;
   }
 
-  // Highlight the selected menu item
+  
   menuItems.forEach(function (item) {
     document.getElementById("menu-" + item.id).classList.remove("active");
   });
   document.getElementById("menu-" + pageId).classList.add("active");
 
-  // Find the menu item to get its label
+  
   const item = menuItems.find(function (m) { return m.id === pageId; });
   pageTitle.textContent = item.label.split(" ").slice(1).join(" ");   // remove the emoji
 
-  // Show the dashboard, or a "coming soon" page for modules not yet built
+  
   if (pageId === "dashboard") {
     showDashboard();
-  } else if (pageId === "roomtypes") {
-    showRoomTypesPage();
-  } else if (pageId === "rooms") {
-    showRoomsPage();
-  } else if (pageId === "availability") {
-    showAvailabilityPage();
-  } else if (pageId === "database") {
-    showDatabasePage();
   } else {
     showComingSoon(item);
   }
@@ -73,7 +62,7 @@ function showPage(pageId) {
 function showDashboard() {
   // Count the rooms that are available
   const availableRooms = Database.getAll("rooms").filter(function (room) {
-    return room.status === "Available" && room.active_status !== "Inactive";
+    return room.status === "Available";
   }).length;
 
   contentArea.innerHTML =
@@ -91,7 +80,7 @@ function showDashboard() {
     '</div>';
 }
 
-// Helper that creates the HTML of one dashboard card
+
 function makeCard(label, number) {
   return '<div class="card">' +
            '<div class="label">' + label + '</div>' +
