@@ -8,6 +8,7 @@ const menuItems = [
   { id: "checkin",      label: "🔑 Check-in",     stage: "a later stage" },
   { id: "billing",      label: "💳 Billing",      stage: "a later stage" },
   { id: "checkout",     label: "🚪 Check-out",    stage: "a later stage" },
+  { id: "receipts",     label: "🧾 Receipts",     stage: "Stage 8" },
   { id: "reports",      label: "📈 Reports",      stage: "a later stage" },
   { id: "users",        label: "🔐 Users",        stage: "a later stage" },
   { id: "database",     label: "🗄️ Database",     stage: "Stage 2" },
@@ -65,6 +66,10 @@ function showPage(pageId) {
     showCheckinPage();
   } else if (pageId === "billing") {
     showBillingPage();
+  } else if (pageId === "checkout") {
+    showCheckoutPage();
+  } else if (pageId === "receipts") {
+    showReceiptsPage();
   } else if (pageId === "database") {
     showDatabasePage();
   } else {

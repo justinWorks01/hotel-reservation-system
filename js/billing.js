@@ -2,7 +2,7 @@ let billingPanel = null;
 let billingSearch = "";
 let billingStatusFilter = "All";
 
-const BILLING_DEFAULTS = { tax_rate: "10", tax_base: "Subtotal" };
+const BILLING_DEFAULTS = { tax_rate: "10", tax_base: "Subtotal", room_status_after_checkout: "Cleaning" };
 const PAYMENT_METHODS = ["Cash", "Card", "Bank Transfer", "Electronic Payment"];
 
 function round2(n) {
@@ -35,7 +35,7 @@ function getTaxRate() {
   return isNaN(rate) ? Number(BILLING_DEFAULTS.tax_rate) : rate;
 }
 
-function computeRoomCharge(r) {
+function computeRoomCharge(r, endOverride) {
   const reservedNights = countNights(r.check_in_date, r.check_out_date);
   const rate = round2(r.total_amount / reservedNights);
 
@@ -43,7 +43,7 @@ function computeRoomCharge(r) {
   const checkOuts = Database.getAll("check_outs").filter(function (c) { return c.reservation_id === r.reservation_id; });
 
   const start = checkIns.length > 0 ? checkIns[checkIns.length - 1].actual_check_in.slice(0, 10) : r.check_in_date;
-  const end = checkOuts.length > 0 ? checkOuts[checkOuts.length - 1].checkout_date.slice(0, 10) : r.check_out_date;
+  const end = endOverride ? endOverride : (checkOuts.length > 0 ? checkOuts[checkOuts.length - 1].checkout_date.slice(0, 10) : r.check_out_date);
 
   let nights = countNights(start, end);
   if (!(nights >= 1)) nights = 1;
@@ -572,49 +572,58 @@ function recalculateBill(id) {
   showBillingPage(messageHtml("ok", "Bill recalculated using the current stay and billing settings."));
 }
 
-function recordPayment() {
-  const bill = Database.getById("billing", billingPanel.id);
-  const raw = readPaymentForm();
-  const p = { amount: toNumber(raw.payAmount), method: raw.payMethod, reference: raw.payRef };
-
+function applyPayment(billId, p) {
+  const bill = Database.getById("billing", billId);
   const errors = validatePayment(bill, p);
-  if (errors.length > 0) {
-    billingPanel.draft = raw;
-    showBillingPage(notAllowedHtml(errors, "PAYMENT NOT RECORDED"));
-    return;
-  }
+  if (errors.length > 0) return { ok: false, errors: errors };
 
   const amount = round2(p.amount);
   const saved = Database.insert("payments", {
     payment_no: nextCode("payments", "payment_no", "P"),
-    bill_id: bill.bill_id,
+    bill_id: billId,
     amount: amount,
     method: p.method,
     reference: p.reference.trim(),
     payment_date: nowLocalText()
   });
-  if (!saved.ok) {
-    billingPanel.draft = raw;
-    showBillingPage(notAllowedHtml(saved.errors, "PAYMENT NOT RECORDED"));
-    return;
-  }
+  if (!saved.ok) return saved;
 
   const paid = round2(bill.amount_paid + amount);
-  const updated = Database.update("billing", bill.bill_id, {
+  const updated = Database.update("billing", billId, {
     amount_paid: paid,
     balance: Math.max(0, round2(bill.total_amount - paid)),
     payment_status: paymentStatusFor(paid, bill.total_amount)
   });
   if (!updated.ok) {
     Database.remove("payments", saved.record.payment_id);
-    showBillingPage(notAllowedHtml(updated.errors, "PAYMENT NOT RECORDED"));
+    return updated;
+  }
+
+  return { ok: true, record: saved.record, bill: updated.record };
+}
+
+function projectBill(bill, checkoutDay) {
+  const r = Database.getById("reservations", bill.reservation_id);
+  const stay = computeRoomCharge(r, checkoutDay);
+  const totals = computeTotals(stay.amount, sumCharges(r.reservation_id), bill.discount_type, bill.discount_value, getTaxRate(), getSetting("tax_base"));
+  return { stay: stay, totals: totals, balance: Math.max(0, round2(totals.total - bill.amount_paid)) };
+}
+
+function recordPayment() {
+  const bill = Database.getById("billing", billingPanel.id);
+  const raw = readPaymentForm();
+  const p = { amount: toNumber(raw.payAmount), method: raw.payMethod, reference: raw.payRef };
+
+  const result = applyPayment(bill.bill_id, p);
+  if (!result.ok) {
+    billingPanel.draft = raw;
+    showBillingPage(notAllowedHtml(result.errors, "PAYMENT NOT RECORDED"));
     return;
   }
 
   billingPanel.draft = null;
-  const after = Database.getById("billing", bill.bill_id);
-  showBillingPage(messageHtml("ok", "Payment " + saved.record.payment_no + " of " + formatPeso(amount) + " recorded. Balance: " +
-    formatPeso(after.balance) + ". Status: " + after.payment_status.toUpperCase() + "."));
+  showBillingPage(messageHtml("ok", "Payment " + result.record.payment_no + " of " + formatPeso(result.record.amount) + " recorded. Balance: " +
+    formatPeso(result.bill.balance) + ". Status: " + result.bill.payment_status.toUpperCase() + "."));
 }
 
 function buildSettingsPanel() {

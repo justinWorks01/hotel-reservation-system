@@ -503,3 +503,64 @@ body {
 .bill-line.paid-line {
   color: var(--muted);
 }
+
+.receipt-box {
+  background: #ffffff;
+  border: 2px dashed #9aa5b5;
+  border-radius: 6px;
+  padding: 24px 28px;
+  max-width: 460px;
+  margin-bottom: 20px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.receipt-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 3px;
+  margin-bottom: 6px;
+}
+
+.receipt-rule {
+  border-top: 2px dashed #6b7280;
+  margin: 10px 0;
+}
+
+.receipt-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 0;
+  font-size: 14px;
+}
+
+.receipt-line.strong {
+  font-weight: bold;
+}
+
+.receipt-thanks {
+  text-align: center;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .receipt-print,
+  .receipt-print * {
+    visibility: visible;
+  }
+
+  .receipt-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    border: none;
+  }
+}
