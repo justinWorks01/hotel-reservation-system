@@ -77,18 +77,50 @@ const SCHEMA = {
     }
   },
 
+  additional_charges: {
+    pk: "charge_id",
+    fields: {
+      reservation_id: { type: "number", required: true, references: { table: "reservations", field: "reservation_id" } },
+      service_type:   { type: "text",   required: true, allowed: ["Breakfast", "Laundry", "Room Service", "Extra Bed", "Airport Transfer", "Mini Bar", "Other Services"] },
+      description:    { type: "text" },
+      quantity:       { type: "number", required: true, min: 1, integer: true },
+      unit_price:     { type: "number", required: true, min: 0 },
+      amount:         { type: "number", required: true, min: 0 },
+      charge_date:    { type: "date",   required: true }
+    }
+  },
+
   billing: {
     pk: "bill_id",
     fields: {
-      reservation_id:  { type: "number", required: true, references: { table: "reservations", field: "reservation_id" } },
+      bill_no:         { type: "text",   required: true, unique: true, pattern: /^B-\d{4,}$/, patternMessage: "Bill No. must look like B-0001." },
+      reservation_id:  { type: "number", required: true, unique: true, references: { table: "reservations", field: "reservation_id" } },
       guest_id:        { type: "number", required: true, references: { table: "guests", field: "guest_id" } },
+      bill_date:       { type: "date",   required: true },
       room_charges:    { type: "number", required: true, min: 0 },
       service_charges: { type: "number", required: true, min: 0 },
+      discount_type:   { type: "text",   allowed: ["Amount", "Percent"], default: "Amount" },
+      discount_value:  { type: "number", min: 0, default: 0 },
+      discount_note:   { type: "text" },
       discounts:       { type: "number", required: true, min: 0 },
+      tax_rate:        { type: "number", min: 0 },
       taxes:           { type: "number", required: true, min: 0 },
       total_amount:    { type: "number", required: true, min: 0 },
       amount_paid:     { type: "number", required: true, min: 0 },
-      balance:         { type: "number", required: true, min: 0 }
+      balance:         { type: "number", required: true, min: 0 },
+      payment_status:  { type: "text",   required: true, allowed: ["Unpaid", "Partial", "Paid"], default: "Unpaid" }
+    }
+  },
+
+  payments: {
+    pk: "payment_id",
+    fields: {
+      payment_no:   { type: "text",     required: true, unique: true, pattern: /^P-\d{4,}$/, patternMessage: "Payment No. must look like P-0001." },
+      bill_id:      { type: "number",   required: true, references: { table: "billing", field: "bill_id" } },
+      amount:       { type: "number",   required: true, min: 0.01 },
+      method:       { type: "text",     required: true, allowed: ["Cash", "Card", "Bank Transfer", "Electronic Payment"] },
+      reference:    { type: "text" },
+      payment_date: { type: "datetime", required: true }
     }
   },
 
@@ -101,6 +133,14 @@ const SCHEMA = {
       final_amount:   { type: "number",   required: true, min: 0 },
       payment_status: { type: "text",     required: true, allowed: ["Paid", "Balance"] },
       remarks:        { type: "text" }
+    }
+  },
+
+  settings: {
+    pk: "setting_id",
+    fields: {
+      setting_key:   { type: "text", required: true, unique: true },
+      setting_value: { type: "text", required: true }
     }
   },
 

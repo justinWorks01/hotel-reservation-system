@@ -249,7 +249,7 @@ function buildGuestProfile(id) {
                        escapeHtml(formatDateTime(c.actual_check_in)) + '</li>';
   });
   bills.forEach(function (b) {
-    transactionHtml += '<li>Bill #' + b.bill_id + ' &ndash; ' + escapeHtml(numberOf(b.reservation_id)) +
+    transactionHtml += '<li>Bill ' + escapeHtml(b.bill_no || ('#' + b.bill_id)) + ' &ndash; ' + escapeHtml(numberOf(b.reservation_id)) +
                        ' &ndash; Total ' + formatPeso(b.total_amount) + ', Paid ' + formatPeso(b.amount_paid) +
                        ', Balance ' + formatPeso(b.balance) + '</li>';
   });

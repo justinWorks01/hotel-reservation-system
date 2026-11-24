@@ -443,3 +443,63 @@ body {
   font-weight: bold;
   letter-spacing: 1px;
 }
+
+.status-paid   { background: #d6f0e0; color: #1e7a45; }
+.status-partial { background: #fff1c9; color: #8a6100; }
+.status-unpaid { background: #f8d7d3; color: #a93226; }
+
+.bill-box {
+  background: #ffffff;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  padding: 20px 24px;
+  max-width: 560px;
+  margin-bottom: 20px;
+}
+
+.bill-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.bill-meta {
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+
+.bill-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 3px 0;
+}
+
+.bill-line small {
+  color: var(--muted);
+}
+
+.bill-line.sep {
+  border-top: 1px solid #c9d1dc;
+  margin-top: 6px;
+  padding-top: 8px;
+  font-weight: bold;
+}
+
+.bill-line.total {
+  border-top: 2px solid var(--primary);
+  margin-top: 6px;
+  padding-top: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.bill-line.paid-line {
+  color: var(--muted);
+}

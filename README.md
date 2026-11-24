@@ -25,6 +25,7 @@ hotel-reservation-system/
 │   ├── guests.js         <- Guest Registration (Lab 6) and Guest Profile (Lab 7)
 │   ├── reservations.js   <- Reservation Form, Validation, Confirmation, Search and History (Labs 8-11)
 │   ├── checkin.js        <- Check-in Module and Walk-in Guest Check-in (Labs 12-13)
+│   ├── billing.js        <- Billing: room charges, services, discounts, taxes, bill, payments (Labs 14-18)
 │   └── app.js            <- menu, pages, dashboard, logout
 ├── database/
 │   └── hotel_database.sql  <- SQL version of the same design
@@ -79,3 +80,11 @@ erDiagram
   - Rooms that are occupied, being cleaned, under maintenance or inactive are refused
 - **Walk-in guest** (Lab 13): register a new guest (or pick an existing one), choose dates and an available room, create a Confirmed reservation and check the guest in, all in one step. If anything fails, nothing is saved.
 - The Checked-in Guests list and the dashboard Checked-in card show who is staying now
+
+## Stage 7 - Billing
+- **Room charges** (Lab 14): rate x nights of the actual stay (actual check-in date to check-out)
+- **Additional services** (Lab 15): Breakfast, Laundry, Room Service, Extra Bed, Airport Transfer, Mini Bar, Other Services; stored in `additional_charges` and linked to the reservation
+- **Discounts and taxes** (Lab 16): discount by amount or percent with a reason; tax rate and tax base are configurable in Billing Settings (default 10%, computed on the subtotal)
+- **Guest bill** (Lab 17): Guest, Room, Stay, Room Charges, services, Subtotal, Discount, Taxes, TOTAL
+- **Payments** (Lab 18): Cash, Card, Bank Transfer, Electronic Payment; reference number required for non-cash; no overpayment; status Unpaid / Partial / Paid
+- Bills are locked for charges and discounts once the guest has checked out; payments can still be recorded

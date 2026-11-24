@@ -63,6 +63,8 @@ function showPage(pageId) {
     showReservationsPage();
   } else if (pageId === "checkin") {
     showCheckinPage();
+  } else if (pageId === "billing") {
+    showBillingPage();
   } else if (pageId === "database") {
     showDatabasePage();
   } else {
