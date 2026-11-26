@@ -95,4 +95,5 @@ erDiagram
 - **Check-out** (Lab 19): review the reservation, charges and payments, settle the balance (final payment, or leave it unpaid with a reason), confirm; the reservation becomes Checked-out and the bill is recalculated for the nights actually stayed
 - **Receipts** (Lab 20): hotel receipt for every check-out; print it, download it as a PDF, view previous receipts, search by receipt, guest, room, bill, payment number or payment reference, and filter by date
 - **Room status** (Lab 21): after check-out the room goes to Cleaning (or Available, set under Hotel Procedure); housekeeping marks cleaned rooms as Available
-- If anything fails during a check-out, nothing is saved
+- If anything fails during a check-out, nothing is savedd
+
