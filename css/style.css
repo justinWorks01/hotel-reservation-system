@@ -551,11 +551,14 @@ body {
   }
 
   .receipt-print,
-  .receipt-print * {
+  .receipt-print *,
+  .report-print,
+  .report-print * {
     visibility: visible;
   }
 
-  .receipt-print {
+  .receipt-print,
+  .report-print {
     position: absolute;
     left: 0;
     top: 0;
@@ -563,4 +566,21 @@ body {
     max-width: none;
     border: none;
   }
+}
+
+.tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.total-row td {
+  font-weight: bold;
+  border-top: 2px solid var(--primary);
+  background: #f8fafc;
+}
+
+.table-scroll {
+  overflow-x: auto;
 }

@@ -28,6 +28,7 @@ hotel-reservation-system/
 │   ├── billing.js        <- Billing: room charges, services, discounts, taxes, bill, payments (Labs 14-18)
 │   ├── checkout.js       <- Check-out, balance settlement and room release (Labs 19 and 21)
 │   ├── receipts.js       <- Receipts: view, print, PDF, search (Lab 20)
+│   ├── reports.js        <- Reservation, Guest, Room Occupancy, Revenue and Billing reports (Labs 22-25)
 │   └── app.js            <- menu, pages, dashboard, logout
 ├── database/
 │   └── hotel_database.sql  <- SQL version of the same design
@@ -95,5 +96,11 @@ erDiagram
 - **Check-out** (Lab 19): review the reservation, charges and payments, settle the balance (final payment, or leave it unpaid with a reason), confirm; the reservation becomes Checked-out and the bill is recalculated for the nights actually stayed
 - **Receipts** (Lab 20): hotel receipt for every check-out; print it, download it as a PDF, view previous receipts, search by receipt, guest, room, bill, payment number or payment reference, and filter by date
 - **Room status** (Lab 21): after check-out the room goes to Cleaning (or Available, set under Hotel Procedure); housekeeping marks cleaned rooms as Available
-- If anything fails during a check-out, nothing is savedd
+- If anything fails during a check-out, nothing is saved
 
+## Stage 9 - Reports
+- **Reservation reports** (Lab 22): daily, confirmed, cancelled, checked-in, checked-out, no-show, and reservations by date; filters: date range, room, room type, guest, status
+- **Guest reports** (Lab 23): guest master list, guest reservation history, frequent guests, current guests, checked-out guests
+- **Room occupancy** (Lab 24): Total, Available, Reserved, Occupied, Cleaning, Maintenance, occupancy rate, and a breakdown by room type
+- **Revenue and billing** (Lab 25): daily, monthly, room and service revenue (checked-out stays), discount, tax, outstanding balances, payment history
+- Every report can be printed or exported as a CSV file

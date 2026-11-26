@@ -70,6 +70,8 @@ function showPage(pageId) {
     showCheckoutPage();
   } else if (pageId === "receipts") {
     showReceiptsPage();
+  } else if (pageId === "reports") {
+    showReportsPage();
   } else if (pageId === "database") {
     showDatabasePage();
   } else {
